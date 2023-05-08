@@ -1,0 +1,36 @@
+name: CI Deploy Dollar-rate-poc
+on:
+  
+  push:
+    paths:
+      - '**.py'
+      - '**.yml'
+    branches:
+      - main
+  
+  workflow_dispatch:
+  
+jobs: 
+  Run_container_start:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ID: ${{ secrets.AWS_KEY }}
+      AWS_SECRET: ${{ secrets.AWS_SECRET }}
+      EXCHANGE_API_KEY: ${{ secrets.EXCHANGE_API_KEY }}
+    
+    steps:
+  
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+        
+      - name: Peform serverless deploy
+        run: |
+          curl -o- -L https://slss.io/install | /bin/bash && export PATH="$HOME/.serverless/bin:$PATH"
+          serverless config credentials --provider aws --key "${AWS_ID}" --secret "${AWS_SECRET}"
+          serverless deploy
