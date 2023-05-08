@@ -1,0 +1,19 @@
+service: dollar-rate
+frameworkVersion: '3'
+package:
+  patterns:
+    - '!node_modules/**'
+    
+provider:
+  name: aws
+  runtime: python3.9
+  stage: poc
+  region: us-east-1
+  timeout: 5
+
+functions:
+  secret-injection:
+    handler: lambda_function.lambda_handler
+    memorySize: 128
+    environment:
+      EXCHANGE_RATE_API_KEY: ${env:EXCHANGE_API_KEY}
